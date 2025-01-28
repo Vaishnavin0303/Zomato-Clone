@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         jdk 'jdk17'
-        nodejs 'node16'
+        nodejs 'nodejs'
     }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/Aj7Ay/Zomato-Clone.git'
+                git branch: 'main', url: 'https://github.com/Vaishnavin0303/Zomato-Clone, credentialsId: 'git-credentials'
             }
         }
         stage("Sonarqube Analysis") {
