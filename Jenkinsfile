@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/Vaishnavin0303/Zomato-Clone, credentialsId: 'git-credentials'
+                git branch: 'main', url: 'https://github.com/Vaishnavin0303/Zomato-Clone', credentialsId: 'git-credentials'
             }
         }
         stage("Sonarqube Analysis") {
