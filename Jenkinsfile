@@ -33,10 +33,46 @@ pipeline {
                 }
             }
         }
-        stage('Install Dependencies') {
+         stage('Install Dependencies') {
             steps {
                 sh "npm install"
             }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --out dependency-check-report', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+        stage("Docker Build & Push"){
+            steps{
+                script{
+                   withDockerRegistry(credentialsId: 'docker'){   
+                       sh "docker build -t zomato ."
+                       sh "docker tag zomato vaishnavi731/zomato:latest "
+                       sh "docker push vaishnavi731/zomato:latest "
+                    }
+                }
+            }
+        }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image vaishnavi731/zomato:latest > trivy.txt" 
+            }
+        }
+        stage('Deploy to container'){
+            steps{
+                sh '''
+                    docker pull vaishnavi731/zomato:latest
+                    docker rm -f zomato || true
+                    docker run -d --name zomato -p 3000:3000 vaishnavi731/zomato:latest
+                '''
+          }
         }
     }
 }
